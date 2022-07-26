@@ -25,30 +25,6 @@ public class RestTemplateFetch {
 
     private ArrayList<Article> arr = new ArrayList<Article>();
 
-    public String getApiKey() {
-        return apiKey;
-    }
-
-    public void setApiKey(String apiKey) {
-        this.apiKey = apiKey;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getParameters() {
-        return parameters;
-    }
-
-    public void setParameters(String parameters) {
-        this.parameters = parameters;
-    }
-
     public ResponseEntity<String> connect(){
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.getForEntity(this.url + this.parameters + this.apiKey,String.class);
