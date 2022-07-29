@@ -10,8 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import tr.com.id3.news.newsfetch.model.Article;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 @Service("rst")
@@ -32,10 +30,19 @@ public class RestTemplateFetch {
     }
     public ArrayList<Article> fetchData(ResponseEntity<String> response) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode root = mapper.readTree(response.getBody()); // root pathi araştır
+        JsonNode root = mapper.readTree(response.getBody());
         root = root.get("articles");
         for(int i = 0;i < root.size();i++){
-            Article article = mapper.readValue(root.get(i).toString(),Article.class);
+            Article article = new Article();
+            for(int j = 1;j<root.get(i).size();j++){
+                article.setAuthor(root.get(i).get("author").toString());
+                article.setTitle(root.get(i).get("title").toString());
+                article.setDescription(root.get(i).get("description").toString());
+                article.setUrl(root.get(i).get("url").toString());
+                article.setUrlToImage(root.get(i).get("urlToImage").toString());
+                article.setPublishedAt(root.get(i).get("publishedAt").toString());
+                article.setContent(root.get(i).get("content").toString());
+            }
             this.arr.add(article);
         }
         return this.arr;

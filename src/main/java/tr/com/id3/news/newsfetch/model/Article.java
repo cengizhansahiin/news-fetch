@@ -1,16 +1,13 @@
 package tr.com.id3.news.newsfetch.model;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
-import org.springframework.stereotype.Component;
-
 import javax.persistence.Entity;
+import javax.persistence.Id;
 
-@Entity
+
 @Data
 public class Article {
 
-    private JsonNode source;
     private String author;
     private String title;
     private String description;
