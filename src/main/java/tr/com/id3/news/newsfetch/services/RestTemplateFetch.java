@@ -4,12 +4,15 @@ package tr.com.id3.news.newsfetch.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import tr.com.id3.news.newsfetch.model.Article;
+
+import javax.jms.TextMessage;
 import java.util.ArrayList;
 
 @Service("rst")
@@ -20,8 +23,10 @@ public class RestTemplateFetch {
     private String apiKey;
     @Value("${connection.parameters}")
     private String parameters;
-
-    private ArrayList<Article> arr = new ArrayList<Article>();
+    @Autowired
+    JmsTemplate jmsTemplate;
+    @Value("${spring.activemq.queue}")
+    String queue;
 
     public ResponseEntity<String> connect(){
         RestTemplate restTemplate = new RestTemplate();
@@ -45,6 +50,15 @@ public class RestTemplateFetch {
                 article.setContent(root.get(i).get("content").toString());
             }
             arr.add(article);
+            try {
+                String articleObject = new ObjectMapper().writer().withDefaultPrettyPrinter().writeValueAsString(article);
+                jmsTemplate.send(queue, messageCreator -> {
+                    TextMessage message = messageCreator.createTextMessage();
+                    message.setText(articleObject);
+                    return message;
+                });
+            }
+            catch (Exception ex){ System.err.println("ERROR sending message! " + ex.toString());}
         }
         return arr;
     }
