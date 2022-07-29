@@ -29,6 +29,7 @@ public class RestTemplateFetch {
         return response;
     }
     public ArrayList<Article> fetchData(ResponseEntity<String> response) throws JsonProcessingException {
+        ArrayList<Article> arr = new ArrayList<Article>();
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(response.getBody());
         root = root.get("articles");
@@ -43,8 +44,8 @@ public class RestTemplateFetch {
                 article.setPublishedAt(root.get(i).get("publishedAt").toString());
                 article.setContent(root.get(i).get("content").toString());
             }
-            this.arr.add(article);
+            arr.add(article);
         }
-        return this.arr;
+        return arr;
     }
 }
