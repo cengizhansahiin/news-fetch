@@ -33,8 +33,7 @@ public class RestTemplateFetch {
         ResponseEntity<String> response = restTemplate.getForEntity(this.url + this.parameters + this.apiKey,String.class);
         return response;
     }
-    public ArrayList<Article> fetchData(ResponseEntity<String> response) throws JsonProcessingException {
-        ArrayList<Article> arr = new ArrayList<Article>();
+    public void fetchData(ResponseEntity<String> response) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(response.getBody());
         root = root.get("articles");
@@ -49,7 +48,6 @@ public class RestTemplateFetch {
                 article.setPublishedAt(root.get(i).get("publishedAt").toString());
                 article.setContent(root.get(i).get("content").toString());
             }
-            arr.add(article);
             try {
                 String articleObject = new ObjectMapper().writer().withDefaultPrettyPrinter().writeValueAsString(article);
                 jmsTemplate.send(queue, messageCreator -> {
@@ -60,6 +58,5 @@ public class RestTemplateFetch {
             }
             catch (Exception ex){ System.err.println("ERROR sending message! " + ex.toString());}
         }
-        return arr;
     }
 }
