@@ -19,10 +19,8 @@ public class BrokerService {
     private String apiKey;
     @Value("${connection.parameters}")
     private String parameters;
-
     @Autowired
     ActiveMQService activeMQService;
-
 
     public ResponseEntity<String> connect(){
         RestTemplate restTemplate = new RestTemplate();
